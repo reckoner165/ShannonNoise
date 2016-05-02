@@ -1,15 +1,17 @@
 var tone; 
+var env;
 var fq = 1000;
-
+var envVal1 = 500;
+var envVal2 = 100;
 
 function setup() {
 
-createCanvas(600,600);
-background(100);
+// createCanvas(600,600);
+// background(100);
 
 // INITIAL SOUND
 
-var env  = T("env", {table:[0, [2, 500], [0.1, 100]], loopNode:1}).bang();
+env  = T("env", {table:[0, [2, envVal1], [0.1, envVal2]], loopNode:1}).bang();
 tone  = T("osc", {freq:fq,mul:0.6}, env).play();
 
 // tone = T("saw",{freq:1024}).play();
@@ -26,13 +28,25 @@ function draw() {
 function mousePressed(){
 
 clipSound();
-background(120,120,0);
+// background(120,120,0);
 }
 
-function keyPressed() {
-  if(keyCode === LEFT_ARROW){
+function keyTyped() {
+  if(key === 'a'){
 
     dropFreq();
+  }
+  else if(key === 'b') {
+
+  	raiseFreq();
+  }
+  else if(key === 'c') {
+
+  	trill();
+  }
+  else if(key == 'r'){
+
+  	reLoad();
   }
 
 }
@@ -41,22 +55,42 @@ function keyPressed() {
 
 function trill() {
 
-  tone.set({freq:T("pulse", {freq:5, add:880, mul:20}).kr()});
+  tone.set({freq:T("pulse", {freq:fq/20, add:fq*1.5, mul:40}).kr()});
 
-tone.on("ended", function() {
-  this.pause();});
+  tone.on("ended", function() {
+  	this.pause();
+  });
 }
 
 function dropFreq() {
 
   tone.set({freq:tone.freq/2});
+  fq = tone.freq;
+}
 
+function raiseFreq() {
+
+  tone.set({freq:tone.freq*2});
+  fq = tone.freq;
+  console.log(fq);
 }
 
 function clipSound() {
 
   tone.pause();
   var clip = T("clip", {minmax:0.3, mul:0.5}, tone).play();
-
 }
+
+function reLoad() {
+
+	location.reload();
+}
+
+// function envCrazy1() {
+
+// 	tone.pause();
+// 	env.set({table[1][2] = env.table[1][2]/5});
+// 	tone.play();
+
+// }
 
