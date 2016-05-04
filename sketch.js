@@ -4,23 +4,49 @@ var env;
 var fq = 1000;
 var envVal1 = 500;
 var envVal2 = 100;
+var gain; var vol1 = 10;
+
 
 function setup() {
 
-// createCanvas(600,600);
+var blah = createCanvas(200,80);
+blah.parent('blah');
+// console.log(source);
+background(100);
+
+// receiver = createCanvas(200,200);
+// receiver.parent('RECEIVER');
 // background(100);
 
 // INITIAL SOUND
 
 env  = T("env", {table:[0, [2, envVal1], [0.1, envVal2]], loopNode:1}).bang();
-tone  = T("osc", {freq:fq,mul:0.6}, env).play();
+tone  = T("osc", {freq:fq,mul:0.4}, env).play();
+tone1 = T("osc", {freq:1000,mul:0.4}, env);
 tone2 = T("pluck", {freq:fq/2||fq.value/2, mul:0.5});
+
+// INPUT AND OUTPUT SCOPE
+
+T("scope", {interval:10}).on("data", function() {
+  this.plot({target:source});
+}).listen(tone1);
+
+T("scope", {interval:10}).on("data", function() {
+  this.plot({target:receiver});
+}).listen(tone2);
+// console.log(tone);
 
 // tone = T("saw",{freq:1024}).play();
 }
 
 
 function draw() {
+
+// var vol1 = map(mouseX,0,width,0,1); 
+// gain = new p5.Gain();
+// gain.setInput(tone);
+// gain.amp(vol1,0.5,0);
+
 
 
 }
@@ -35,15 +61,15 @@ clipSound();
 
 function keyTyped() {
 	console.log(env);
-  if(key === 'a'){
+  if(key === 'q'){
 
     dropFreq();
   }
-  else if(key === 'b') {
+  else if(key === 'w') {
 
   	raiseFreq();
   }
-  else if(key === 'c') {
+  else if(key === 'e') {
 
   	trill();
   }
@@ -51,9 +77,47 @@ function keyTyped() {
 
   	reLoad();
   }
-  else if(key === 'd'){
+  else if(key === 't'){
 
   	pluckTone();
+  }
+  else if(key === 'y'){
+
+  	delayPluck();
+  }
+  else if(key === 'u'){
+
+    vol1 = vol1 + 10;
+  }
+  else if(key === 'i'){
+
+  }
+  else if(key === 'o'){
+
+  }
+  else if(key === 'p'){
+  	
+  }
+  else if(key === '['){
+  	
+  }
+  else if(key === ']'){
+  	
+  }
+  else if(key === 'a'){
+  	
+  }
+  else if(key === 's'){
+  	
+  }
+  else if(key === 'd'){
+  	
+  }
+  else if(key === 'f'){
+  	
+  }
+  else if(key === 'g'){
+  	
   }
 
 }
@@ -72,14 +136,16 @@ function trill() {
 function dropFreq() {
 
   tone.set({freq:tone.freq/2});
+  tone2.set({freq:tone2.freq/1.2});
   fq = tone.freq;
 }
 
 function raiseFreq() {
 
   tone.set({freq:tone.freq*2});
+  tone2.set({freq:tone2.freq*1.2});
   fq = tone.freq;
-  console.log(fq.value);
+  // console.log(fq.value);
 }
 
 function clipSound() {
@@ -97,6 +163,12 @@ function pluckTone() {
 
 	// tone2.set({freq:tone.freq});
 	tone2.bang().play();
+}
+
+function delayPluck() {
+
+	var t = T("+sin", {freq:0.3, add:150, mul:25});
+	T("delay", {time:t, fb:0.9, mix:0.45}, tone2).play();
 }
 
 // function envCrazy1() {
