@@ -1,7 +1,8 @@
 var tone; 
 var tone2;
 var env;
-var fq = 1000;
+var fq;
+var fqInit = 1000;
 var envVal1 = 500;
 var envVal2 = 100;
 var gain; var vol1 = 10;
@@ -9,10 +10,10 @@ var gain; var vol1 = 10;
 
 function setup() {
 
-var blah = createCanvas(200,80);
-blah.parent('blah');
-// console.log(source);
-background(100);
+// var blah = createCanvas(200,80);
+// blah.parent('blah');
+// // console.log(source);
+// background(100);
 
 // receiver = createCanvas(200,200);
 // receiver.parent('RECEIVER');
@@ -21,9 +22,9 @@ background(100);
 // INITIAL SOUND
 
 env  = T("env", {table:[0, [2, envVal1], [0.1, envVal2]], loopNode:1}).bang();
-tone  = T("osc", {freq:fq,mul:0.4}, env).play();
+tone  = T("osc", {freq:fqInit,mul:0.4}, env).play();
 tone1 = T("osc", {freq:1000,mul:0.4}, env);
-tone2 = T("pluck", {freq:fq/2||fq.value/2, mul:0.5});
+tone2 = T("pluck", {freq:fqInit/2||fq.value/2, mul:0.5});
 
 // INPUT AND OUTPUT SCOPE
 
@@ -33,7 +34,7 @@ T("scope", {interval:10}).on("data", function() {
 
 T("scope", {interval:10}).on("data", function() {
   this.plot({target:receiver});
-}).listen(tone2);
+}).listen(tone);
 // console.log(tone);
 
 // tone = T("saw",{freq:1024}).play();
@@ -94,6 +95,17 @@ function keyTyped() {
   }
   else if(key === 'o'){
 
+    var api = T("WebAudioAPI:recv");
+    var context = api.context;
+
+    var osc = context.createOscillator();
+    osc.frequency.value = 880;
+    osc.noteOn(0);
+
+    api.recv(osc);
+
+    T("+sin", {freq:2},api).play();
+
   }
   else if(key === 'p'){
   	
@@ -120,13 +132,23 @@ function keyTyped() {
   	
   }
 
+  T("scope", {interval:10}).on("data", function() {
+  this.plot({target:receiver});
+}).listen(tone);
+
+}
+
+function keyReleased() {
+
+tone.pause();
+tone  = T("osc", {freq:fqInit,mul:0.4}, env).play();  
 }
 
 // FUNCTION BANK
 
 function trill() {
 
-  tone.set({freq:T("pulse", {freq:fq.value/20||fq/20, add:fq.value*1.5||fq*1.5, mul:40}).kr()});
+  tone.set({freq:T("pulse", {freq:fq.value/20||fqInit/20, add:fq.value*1.5||fq*1.5, mul:40}).kr()});
 
   tone.on("ended", function() {
   	this.pause();
