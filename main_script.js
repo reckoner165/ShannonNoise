@@ -1,5 +1,6 @@
 //GLOBAL VARIABLES
 
+//The Message
 var notes = ["A3", "E4", "E5", "A4", "D5", "A4", "E5", "A4", "C5", "A4", "E5", "A4", "B4", "A4", "E4", "A4"];
 var position = 0;
 var synth; 
@@ -24,11 +25,11 @@ function source() {
 	 // }
 
 	}).toMaster();
-	synth.volume.value = -12; //Volume in dB
+	synth.volume.value = -18; //Volume in dB
 
 }
 
-//DEFINING RECEIVER
+//DEFINING ENCODER
 
 function setup(){
 
@@ -72,20 +73,35 @@ function keyTyped() {
 	keyFlag+=1;
 	keyTimer = 0;
 
-	if(keyFlag === 1) {
+	if(key === ' '){
 
-		if (key === 'q') {
-
-			disrupt[0]();
+			location.reload();
+			console.log('sup');
 		}
-	}
-	else if (keyFlag >= 5){
 
-		keyFlag = 5;
-	}
-	
+	else{
 
-return false;
+		if(keyFlag === 1) {
+
+			
+			if (key === 'q') {
+
+				disrupt[4]();
+			}
+			else if (key === 'w'){
+
+				disrupt[6]();
+				// console.log(synth);
+			}
+		}
+		else if (keyFlag >= 100){
+
+			keyFlag = 100;
+		
+		}
+	}	
+
+// return false;
 }
 
 function keyReleased() {
@@ -98,18 +114,48 @@ function keyReleased() {
 
 //FUNCTION ARRAY OF ALL DISRUPTION
 var disrupt = [
-    function() {
+    function() { //FUNCTION 0
 
     	// var noise = new Tone.Tremolo(11, 0.75).toMaster().start();
     	var noise = new Tone.Distortion(0.8).toMaster();
     	synth = new Tone.SimpleSynth().connect(noise);
-    	
+    },
+    function() { //FUNCTION 1
 
+    	var noise = new Tone.BitCrusher(2).toMaster();
+		synth = new Tone.MonoSynth().connect(noise);
+    },
+    function() { //FUNCTION 2
 
-     },
-    function() { second_function('a string') },
-    function() { third_function('a string') },
-    function() { fourth_function('a string') }
+    	var noise = new Tone.FeedbackDelay("3n", 0.8).toMaster();
+    	synth = new Tone.SimpleSynth().connect(noise);
+    },
+    function() { //FUNCTION 3
+
+    	var noise = new Tone.Tremolo(11, 0.85).toMaster().start();
+    	synth = new Tone.MonoSynth().connect(noise);
+    },
+    function() { //FUNCTION 4
+
+    	var cutoff
+    	var noise = new Tone.Filter().toMaster();
+    	var lfo = new Tone.LFO("1n", 4000, 1000).connect(noise.frequency);
+    	synth = new Tone.SimpleSynth().connect(noise);
+    },
+    function() { //FUNCTION 5
+
+    	var noise = new Tone.FeedbackCombFilter().toMaster();
+    	synth = new Tone.SimpleSynth().connect(noise);
+    },
+    function() { //FUNCTION 6
+
+    	var split = new Tone.Split();
+    	var noise = new Tone.Filter().toMaster();
+		synth = new Tone.SimpleSynth().connect(split);
+		split.right.connect(noise);
+		split.left.toMaster();
+    }
+
 ]
 
 Tone.Transport.start();
