@@ -76,23 +76,25 @@ function keyTyped() {
 	if(key === ' '){
 
 			location.reload();
-			console.log('sup');
+			console.log("sup");
 		}
 
 	else{
 
-		if(keyFlag === 1) {
+		
 
-			
-			if (key === 'q') {
+		if(keyFlag === 1 || keyFlag === 2) {
 
-				disrupt[4]();
-			}
-			else if (key === 'w'){
+			disrupt[Math.floor(Math.random() * 6)]();
+			// if (key === 'q') {
 
-				disrupt[6]();
-				// console.log(synth);
-			}
+			// 	disrupt[4]();
+			// }
+			// else if (key === 'w'){
+
+			// 	disrupt[6]();
+			// 	// console.log(synth);
+			// }
 		}
 		else if (keyFlag >= 100){
 
@@ -155,7 +157,6 @@ var disrupt = [
 		split.right.connect(noise);
 		split.left.toMaster();
     }
-
 ]
 
 Tone.Transport.start();
